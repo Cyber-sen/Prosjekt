@@ -2,10 +2,10 @@ import csv
 from datetime import datetime
 import matplotlib.pyplot as plt
 
-with open("resources/Vannføringtest.csv", newline='', encoding='utf-8') as csvfile:
+with open("resources/Vannføring.csv", newline='', encoding='utf-8') as csvfile:
     csv_reader = csv.reader(csvfile, delimiter=";")
-    
-    next(csv_reader) 
+
+    next(csv_reader)  
     next(csv_reader)  
 
     startdato = "1995-01-01"
@@ -13,45 +13,47 @@ with open("resources/Vannføringtest.csv", newline='', encoding='utf-8') as csvf
 
     stats = {}
 
+    #funksjonen tar snitt av siste 7 dager for å gi tomme rader en "passende" verdi
+    def leggTilVerdi(stats):
+        siste_7_dager = list(stats.values())[-7:]
+        if len(siste_7_dager) == 7:
+            return sum(siste_7_dager) / 7
+        return 0  # Standardverdi hvis feil på de første radene
+
     for row in csv_reader:
         dato = row[0].split()[0]
-        try:
-            d = (datetime.strptime(dato, format) - datetime.strptime(startdato, format)).days
-            
+        d = (datetime.strptime(dato, format) - datetime.strptime(startdato, format)).days
+        
+        try: 
             vannføring = float(row[1].replace(',', '.'))  # Vannføring (m³/s)
-            
-            stats[d] = vannføring 
-
         except (ValueError, IndexError):
-            print(" feil i linje")
-            continue  
+            vannføring = leggTilVerdi(stats)
 
-month = {}
-sum = 0.0
-month_start_day = 0  
+        stats[d] = vannføring  
+
+years = {}
+sum_vannføring = 0.0
+year_start_day = 0  
 
 for i in range(len(stats)):
-    try:
-        sum += stats[i]
-    except:
-        print()
-    month_start_day += 1
-    if month_start_day == 30:
-        month[i/30] = sum
-        sum = 0  
-        month_start_day = 0 
+    if i in stats:  # Sjekker at i eksisterer i stats
+        sum_vannføring += stats[i]
+
+    year_start_day += 1
+    if year_start_day == 365:
+        years[i / 365] = sum_vannføring
+        sum_vannføring = 0  
+        year_start_day = 0 
 
 x1 = list(stats.keys())
-y1 = [values for values in stats.values()]
+y1 = list(stats.values())
 
-
-x2 = list(month.keys())
-y2 = [values for values in month.values()]
-
+x2 = list(years.keys())
+y2 = list(years.values())
 
 plt.plot(x2, y2, marker='o', linestyle='-', color='b')
-plt.xlabel('Måneder siden startdato')
-plt.ylabel('Månedlig Vannføring (m³/s)')
-plt.title('Vannføring aggregert per måned')
+plt.xlabel('År siden startdato')
+plt.ylabel('Årlig Vannføring (m³/s)')
+plt.title('Vannføring over tid')
 plt.grid(True)
 plt.show()
