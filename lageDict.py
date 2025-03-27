@@ -36,7 +36,7 @@ sum_vannføring = 0.0
 year_start_day = 0  
 
 for i in range(len(stats)):
-    if i in stats:  # Sjekker at i eksisterer i stats
+    if i in stats: 
         sum_vannføring += stats[i]
 
     year_start_day += 1
