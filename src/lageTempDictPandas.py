@@ -5,7 +5,7 @@ import matplotlib.cm as cm
 
 
 df = pd.read_csv(
-    "resources/123.38.0-Vanntemperatur-dogn-v1.csv", 
+    "data/123.38.0-Vanntemperatur-dogn-v1.csv", 
     delimiter=";", 
     encoding="utf-8", 
     skiprows=2,  

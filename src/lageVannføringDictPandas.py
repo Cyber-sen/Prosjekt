@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 df = pd.read_csv(
-    "resources/Vannføring.csv", 
+    "data/Vannføring.csv", 
     delimiter=";", 
     encoding="utf-8", 
     skiprows=2,  
