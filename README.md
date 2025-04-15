@@ -1,4 +1,4 @@
-# Prosjektnavn
+# Prosjekt del 1 rensing og samling
 
 Temperaturen stiger for hvert år og vannføringen varierer. Klimaendrer seg og man bør finne ut av hvordan alt dette påvirker Trondheim. 
 I del 1 så skal vscode, git og strukturen fungere. Det er samlet data fra to csv filer om vannføring og temperatur i Trondheim, og en api for nåværende data: Temperature, wind, pressure og humidity. 
@@ -12,3 +12,4 @@ En uregelmessighet vi forventer å møte på er når data mangles i CSV-ene
 # Installasjon
 
 pip install -r requirements.txt
+

@@ -73,7 +73,7 @@ class TidsseriePlotter:
 
 #Eksempel på bruk:
 #bruk "data/tempvannføring.csv" eller "data/temperatur.csv" så valgfritt visningsnavn
-graf = TidsseriePlotter("data/temperatur.csv", visningsnavn="temperatur")
+graf = TidsseriePlotter("data/temperatur.csv",'temperatur')
 graf.behandle_data()
 graf.vis_graf("år")  # Kan også bruke "dag", "uke", eller "år"
 
@@ -83,3 +83,7 @@ graf.vis_graf("år")  # Kan også bruke "dag", "uke", eller "år"
 #om csv ikke finnes, om den er tom, inneholder flere feil osv
 #legge til analyser av grafene (min/max/mean for tidsperioder)
 #bare skriv her om det er noe mer
+
+# Slett alt under senere 
+#Antar at visningsnavnet er det samme som y-aksen 
+# Legg til muligheten til å endre y-akse og visningsnavnet hver for seg. 
