@@ -1,12 +1,16 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+
 class TidsseriePlotter:
-    def __init__(self, filsti: str, periode: str,visningsnavn: str = "Verdi" ):
+    def __init__(self, filsti: str,enhet: str , periode: str = 'år', konvertering: float = 1, visningsnavn: str = "Verdi" ):
         self.filsti = filsti # Sti for å finne filen
         self.visningsnavn = visningsnavn  # Hva grafen viser (f.eks. "Temperatur" eller "Vannføring")
+        self.periode = periode #dag, uke, måned eller år, for å endre antall datapunkter etter behov
+        self.enhet = enhet #Enheten til grafen
+        self.konvertering = konvertering
         self.data_dict = {}
-        self.periode = periode
+        
 
     def behandle_data(self):  
         df = pd.read_csv(
@@ -37,6 +41,11 @@ class TidsseriePlotter:
         # Lager dict med tidspunktene og verdiene
         self.data_dict = dict(zip(df["Tidspunkt"], df["Verdi"]))
 
+        # Konverterer 
+        if isinstance(self.konvertering, (int, float)):
+            self.data_dict = {t: v * self.konvertering for t, v in self.data_dict.items()}
+       
+
     def agg_df(self):
         df = pd.DataFrame(list(self.data_dict.items()), columns=["Tidspunkt", "Verdi"])
 
@@ -56,58 +65,48 @@ class TidsseriePlotter:
 
     def mean_value(self):
 
-        df = pd.DataFrame(list(self.data_dict.items()), columns=["Tidspunkt", "Verdi"])
+        # df = pd.DataFrame(list(self.data_dict.items()), columns=["Tidspunkt", "Verdi"])
 
         return float(np.mean(self.agg_df()["Verdi"]))
 
     
     def median_value(self):
         
-        df = pd.DataFrame(list(self.data_dict.items()), columns=["Tidspunkt", "Verdi"])
+        # df = pd.DataFrame(list(self.data_dict.items()), columns=["Tidspunkt", "Verdi"])
         return float(np.median(self.agg_df()["Verdi"]))
+    
 
-    def vis_graf(self, mean=True, median = True):
+    def standardavvik(self):
+        return float(np.std(self.agg_df()["Verdi"]))
+
+
+    def vis_graf(self, mean=True, median = True, maximum = True, minimum = True):
         if not self.data_dict:
             try:
                 self.behandle_data()
             except:
-                raise ValueError("Data er ikke behandlet ennå. Kjør behandle_data() først.")
+                raise ValueError("Data er ikke behandlet riktig ennå. Kjør eller fiks behandle_data() først.")
 
         df = pd.DataFrame(list(self.data_dict.items()), columns=["Tidspunkt", "Verdi"])
 
-        if self.periode == "dag":
-            agg_df = df.copy()
-
-        elif self.periode == "uke":
-            df["Uke"] = df["Tidspunkt"].dt.to_period("W").apply(lambda r: r.start_time)
-            # Gruppér etter uke og beregn gjennomsnitt
-            agg_df = df.groupby("Uke")["Verdi"].mean().reset_index().rename(columns={"Uke": "Tidspunkt"})
-
-        elif self.periode == "måned":
-            df["ÅrMåned"] = df["Tidspunkt"].dt.to_period("M").dt.to_timestamp()
-            # Gruppér etter måned og beregn gjennomsnitt
-            agg_df = df.groupby("ÅrMåned")["Verdi"].mean().reset_index().rename(columns={"ÅrMåned": "Tidspunkt"})
-
-        elif self.periode == "år":
-            df["År"] = df["Tidspunkt"].dt.year
-            # Gruppér etter år og beregn gjennomsnitt
-            agg_df = df.groupby("År")["Verdi"].mean().reset_index().rename(columns={"År": "Tidspunkt"})
-
-        else:
-            raise ValueError("Ugyldig periode. Velg mellom: 'dag', 'uke', 'måned', 'år'")
-        
           # Plotter grafen
         plt.figure(figsize=(12, 6))
         if mean==True:
-            plt.axhline(self.mean_value(), color='orange', linestyle=':', label=f"Mean: {self.mean_value():.2f}")
+            plt.axhline(self.mean_value(), color='orange', linestyle=':', label=f"Mean: {self.mean_value():.5f}")
 
         if median==True:
-            plt.axhline(agg_df['Verdi'].median(), color='red', linestyle=':', label=f"Median: {agg_df['Verdi'].median():.2f}")
+            plt.axhline(self.agg_df()['Verdi'].median(), color='red', linestyle=':', label=f"Median: {self.agg_df()['Verdi'].median():.5f}")
            
+        if maximum == True:
+             plt.axhline(self.agg_df()['Verdi'].max(), color='black', linestyle=':', label=f"maximum: {self.agg_df()['Verdi'].max():.5f}")
 
-        plt.plot(agg_df["Tidspunkt"], agg_df["Verdi"], label=f"{self.visningsnavn} ({self.periode})")
+        if minimum == True:
+             plt.axhline(self.agg_df()['Verdi'].min(), color='black', linestyle=':', label=f"minimum: {self.agg_df()['Verdi'].min():.5f}")
+
+        plt.plot([], [], ' ', label=f'Std.avvik: {self.standardavvik():.5f}')
+        plt.plot(self.agg_df()["Tidspunkt"], self.agg_df()["Verdi"], label=f"{self.visningsnavn} ({self.periode})")
         plt.xlabel("Tid")
-        plt.ylabel(self.visningsnavn)
+        plt.ylabel(f'{self.visningsnavn} ({self.enhet})')
         plt.title(f"{self.visningsnavn} over tid ({self.periode})")
         plt.grid(True)
         plt.legend()
