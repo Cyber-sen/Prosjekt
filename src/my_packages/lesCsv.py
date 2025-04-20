@@ -1,16 +1,19 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import pandasql as ps
 
 class TidsseriePlotter:
-    def __init__(self, filsti: str,enhet: str , periode: str = 'år', konvertering: float = 1, visningsnavn: str = "Verdi" ):
+    def __init__(self, filsti: str,enhet: str , periode: str = 'år', konvertering: float = 1, visningsnavn: str = "Verdi", start: str=None, slutt: str=None ):
         self.filsti = filsti # Sti for å finne filen
         self.visningsnavn = visningsnavn  # Hva grafen viser (f.eks. "Temperatur" eller "Vannføring")
         self.periode = periode #dag, uke, måned eller år, for å endre antall datapunkter etter behov
         self.enhet = enhet #Enheten til grafen
         self.konvertering = konvertering
+        self.start=start
+        self.slutt=slutt
         self.data_dict = {}
-        
+        self.behandle_data()
 
     def behandle_data(self):  
         df = pd.read_csv(
@@ -23,9 +26,21 @@ class TidsseriePlotter:
             names=["Tidspunkt", "Verdi"]
         )
         
+        #begrenser område som analyseres
+        query = f"""
+        SELECT * FROM df
+        WHERE 1=1
+        {f"AND Tidspunkt >= '{self.start}'" if self.start is not None else ""}
+        {f"AND Tidspunkt <= '{self.slutt}'" if self.slutt is not None else ""}
+        """
+
+        df = ps.sqldf(query, locals())
+
+
         # Konverterer tekst i "Tidspunkt"-kolonnen til datetime-objekter
         # Hvis noe ikke passer formatet, blir det satt som NaT
         df["Tidspunkt"] = pd.to_datetime(df["Tidspunkt"], format="%Y-%m-%d %H:%M:%SZ", errors="coerce")
+
 
         # Konverterer "Verdi"-kolonnen fra tekst til tall
         # Først byttes komma til punktum og så forsøkes konvertering til float. Feil gir NaN
@@ -34,12 +49,16 @@ class TidsseriePlotter:
         # Ved mangel får verdien gjennomsnitt over forrige 7 dager
         # Ved mindre enn 7 brukes antallet før (min 1)
         df["Verdi"] = df["Verdi"].fillna(df["Verdi"].rolling(7, min_periods=1).mean())
+       
 
        #fikser alle nan om det er noen
-        df["Verdi"] = df["Verdi"].ffill().bfill()
+        # df["Verdi"] = df["Verdi"].ffill().bfill()
 
         # Lager dict med tidspunktene og verdiene
         self.data_dict = dict(zip(df["Tidspunkt"], df["Verdi"]))
+
+       
+
 
         # Konverterer 
         if isinstance(self.konvertering, (int, float)):
@@ -80,7 +99,7 @@ class TidsseriePlotter:
         return float(np.std(self.agg_df()["Verdi"]))
 
 
-    def vis_graf(self, mean=True, median = True, maximum = True, minimum = True):
+    def vis_graf(self, mean=True, median = True, maximum = True, minimum = True, maxverdi:float=None, minverdi: float =None):
         if not self.data_dict:
             try:
                 self.behandle_data()
@@ -88,6 +107,15 @@ class TidsseriePlotter:
                 raise ValueError("Data er ikke behandlet riktig ennå. Kjør eller fiks behandle_data() først.")
 
         df = pd.DataFrame(list(self.data_dict.items()), columns=["Tidspunkt", "Verdi"])
+       
+        if minverdi is not None:
+            self.data_dict = {t: v for t, v in self.data_dict.items() if v >= minverdi}
+
+        if maxverdi is not None:
+            df = df[df["Verdi"] <= maxverdi]
+
+        # print(df["Verdi"].isna().sum()) 
+
 
           # Plotter grafen
         plt.figure(figsize=(12, 6))
@@ -102,6 +130,11 @@ class TidsseriePlotter:
 
         if minimum == True:
              plt.axhline(self.agg_df()['Verdi'].min(), color='black', linestyle=':', label=f"minimum: {self.agg_df()['Verdi'].min():.5f}")
+
+        
+        
+        
+        
 
         plt.plot([], [], ' ', label=f'Std.avvik: {self.standardavvik():.5f}')
         plt.plot(self.agg_df()["Tidspunkt"], self.agg_df()["Verdi"], label=f"{self.visningsnavn} ({self.periode})")
