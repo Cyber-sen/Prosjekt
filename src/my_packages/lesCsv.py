@@ -116,7 +116,6 @@ class TidsseriePlotter:
 
         # print(df["Verdi"].isna().sum()) 
 
-
           # Plotter grafen
         plt.figure(figsize=(12, 6))
         if mean==True:
@@ -130,11 +129,6 @@ class TidsseriePlotter:
 
         if minimum == True:
              plt.axhline(self.agg_df()['Verdi'].min(), color='black', linestyle=':', label=f"minimum: {self.agg_df()['Verdi'].min():.5f}")
-
-        
-        
-        
-        
 
         plt.plot([], [], ' ', label=f'Std.avvik: {self.standardavvik():.5f}')
         plt.plot(self.agg_df()["Tidspunkt"], self.agg_df()["Verdi"], label=f"{self.visningsnavn} ({self.periode})")
