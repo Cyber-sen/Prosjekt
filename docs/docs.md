@@ -8,4 +8,8 @@
         df["Verdi"] = df["Verdi"].ffill().bfill()
 
 
+# Svare på hvorfor median, mean og standardavvik er viktig:
+Median gir tallet i midten og blir mindre påvirket av, så den gir et annet perspektiv enn mean og begge samtidig kan gi et perspektiv på sjevfordelingen i dataen. Og årsaker til at dataen kan være sjevfordelt er manglende verdier, problemer med datainnsamplingen eller at det er nye funn.
+Standardavvik regner hvor nøyaktig dataene er.   
+
 

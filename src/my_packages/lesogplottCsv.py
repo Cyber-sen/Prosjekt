@@ -135,7 +135,7 @@ class TidsseriePlotter:
         if minimum == True:
              plt.axhline(self.agg_df()['Verdi'].min(), color='black', linestyle=':', label=f"minimum: {self.agg_df()['Verdi'].min():.5f}")
 
-        if self.graf_type== 'bar':    
+        if self.graf_type== 'bar'.lower():    
             plt.bar(self.agg_df()["Tidspunkt"], self.agg_df()["Verdi"], width=4, label=f"{self.visningsnavn} ({self.periode})")
 
         if self.graf_type== 'line' :
