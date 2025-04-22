@@ -4,15 +4,18 @@ Alle analysene er i notebooksmappen med drøftinger til slutt. Hver fil der anal
  
 # eksempel på kontrollpanel:
 
-#Valg av csv filer: temperatur.csv, Vannføring.csv, 123.38.0-Vanntemperatur-dogn-v1.csv
-
+#Valg av csv filer: temperatur.csv, Vannføring.csv
 csvfilen = 'Vannføring.csv'
-Periode = 'år'  #Velg fra følgene perioder: dag, uke, måned eller år
+Periode = 'år'
 Navn ='Vannføring'
 Enhet = 'L/s'
-
-#For å gjøre om enhet til noe annet. (eks fra m3/s til L/s trenger en faktor på 1000, for å bytte enheter)
+Graf_type = 'line'
+#For å gjøre om enhet til noe annet
 konverteringsfaktor = 1000
+
+#Intervall eks_format: '2024-01-01'
+Slutt =None
+Start = None
 
 #True eller False (På eller av): Slår av eller på median og gjennomsnittsverdi (Mean)
 Median = True
