@@ -1,12 +1,12 @@
-import requests
-import os
-from dotenv import load_dotenv
+import requests # For å gjøre HTTP-forespørsler til API
+import os # For å jobbe med miljøvariabler og filsystem
+from dotenv import load_dotenv  # For å laste miljøvariabler fra .env-fil
 
 # Load environment variables
-load_dotenv()
+load_dotenv() # Laster variabler fra .env-fil
 
-api_key = os.getenv('API_KEY')
-city = 'Trondheim'
+api_key = os.getenv('API_KEY') # Henter API-nøkkel fra miljøvariabler
+city = 'Trondheim'  # Byen vi ønsker værdata for
 
 try:
     # Build URL
@@ -15,16 +15,16 @@ try:
     
     # Make API request
     response = requests.get(url)
-    response.raise_for_status()  # Raises exception for HTTP errors
+    response.raise_for_status()  # Gir feilmelding ved HTTP-feil
     
-    data = response.json()
+    data = response.json() # Konverterer JSON-svar til Python-dictionary
     
     # Extract data with error handling
-    humidity = data['main']['humidity']
-    pressure = data['main']['pressure']
-    wind = data['wind']['speed']
-    description = data['weather'][0]['description']
-    temp = data['main']['temp']
+    humidity = data['main']['humidity']     # Luftfuktighet i prosent
+    pressure = data['main']['pressure']     # Lufttrykk i hPa
+    wind = data['wind']['speed']            # Vindhastighet i m/s    
+    description = data['weather'][0]['description'] # Vindhastighet i m/s
+    temp = data['main']['temp']             # Temperatur i °C
     
     # Print formatted output
     print(f"Weather in {city}:")
