@@ -2,6 +2,9 @@ import unittest
 from unittest.mock import patch, MagicMock
 import pandas as pd
 import numpy as np
+# import sys
+# sys.path.append('../src')
+
 from my_packages.lesogplottCsv import TidsseriePlotter
 from my_packages.sammenligning import sammenlign_plot
 

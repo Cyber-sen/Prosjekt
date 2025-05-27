@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: my_package
+Version: 0.1
+Summary: Classer for å sammenligne plot og plotte tidsserieplot
+Requires-Python: >=3.6
+Dynamic: requires-python
+Dynamic: summary
