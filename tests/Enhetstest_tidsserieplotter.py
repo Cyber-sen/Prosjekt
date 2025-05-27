@@ -1,11 +1,13 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock # Importerer mock-verktøy for å simulere avhengigheter
 import numpy as np
 from my_packages.lesogplottCsv import TidsseriePlotter
 
-class TestTidsseriePlotter(unittest.TestCase):
+class TestTidsseriePlotter(unittest.TestCase): # Definerer testklasse som arver fra unittest.TestCase
 
+    # Dekorerer testmetoden for å mocke matplotlib
     @patch('my_packages.lesogplottCsv.plt')  # Mock matplotlib
+    # Dekorerer testmetoden for å mocke pandas CSV-lesing
     @patch('my_packages.lesogplottCsv.pd.read_csv')  # Mock pandas lesing av CSV
     def test_plotter_initialisering_og_vis_graf(self, mock_read_csv, mock_plt):
         # Simulert data
@@ -13,10 +15,11 @@ class TestTidsseriePlotter(unittest.TestCase):
             'Dato': ['2024-01-01', '2024-01-02', '2024-01-03'],
             'Verdi': [1.0, 2.0, 3.0]
         }
-        import pandas as pd
+
+        import pandas as pd  # Importerer pandas for å lage DataFrame
         mock_read_csv.return_value = pd.DataFrame(mock_data)
 
-        # Initialiser objektet
+        # Setter returverdi for mock_read_csv til vår simulerte data
         plotter = TidsseriePlotter(
             filsti='../data/Vannføring.csv',
             enhet='L/s',
@@ -38,6 +41,7 @@ class TestTidsseriePlotter(unittest.TestCase):
         # Sjekk at plt.show() ble kalt (indikerer at graf ble forsøkt vist)
         self.assertTrue(mock_plt.show.called)
 
+    # Testmetode for feilhåndtering av manglende fil
     def test_plotter_med_feil_fil(self):
         with self.assertRaises(FileNotFoundError):
             _ = TidsseriePlotter(
