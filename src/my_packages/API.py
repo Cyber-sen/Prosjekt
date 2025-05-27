@@ -33,7 +33,7 @@ try:
     print(f"Pressure: {pressure} hPa")
     print(f"Humidity: {humidity}%")
     print(f"Conditions: {description.capitalize()}")
-    ### -> Må ha flere variabler med informasjon på prosjektet (ikke bare vannføring)
+    
     
 except requests.exceptions.RequestException as e:
     print(f"Error fetching weather data: {e}")
